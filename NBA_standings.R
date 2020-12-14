@@ -43,5 +43,15 @@ league_standings <- merge(league_standings, team_ous,
                           by.x = 'slugTeam', by.y = 'Organization', 
                           all.x = TRUE)
 
+## historical totals
+## odds from: https://www.sportsoddshistory.com/nba-regular-season-win-total-results-by-team/ 
+totals_hist <- readxl::read_xlsx("Documents/Sports/NBA Standings/historical_win_totals.xlsx", 
+                                 sheet = 'Totals') %>% 
+  data.frame() %>% 
+  gather(key = 'season', value = 'win_total', -Organization) %>% 
+  mutate(season = stringr::str_replace(season, 'X', ''), 
+         win_total = as.numeric(ifelse(win_total == 'N/A', NA, win_total)))
+
 ## write final file
 fwrite(league_standings, "Documents/Sports/NBA Standings/leauge_standings.csv")
+fwrite(totals_hist, "Documents/Sports/NBA Standings/org_win_totals.csv")
